@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameStore 2026</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #1e1e2e;
+            --darker: #181825;
+            --light: #cdd6f4;
+            --accent: #f38ba8;
+            --success: #a6e3a1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        /* Header & Nav */
+        header {
+            background-color: var(--dark);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        /* Search Bar */
+        .search-container {
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(to bottom, var(--dark), var(--darker));
+        }
+
+        #search-input {
+            width: 100%;
+            max-width: 600px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid var(--secondary);
+            background-color: var(--darker);
+            color: var(--light);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        #search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(108, 92, 231, 0.3);
+        }
+
+        /* Games Grid */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background-color: var(--dark);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #313244;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border-color: var(--primary);
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background-color: #313244;
+        }
+
+        .game-info {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            align-self: flex-start;
+        }
+
+        .game-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--light);
+        }
+
+        .game-action {
+            margin-top: auto;
+        }
+
+        .game-action button {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--secondary);
+            border: none;
+            color: var(--darker);
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .game-action button:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Sell Section */
+        .sell-section {
+            background-color: var(--dark);
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .sell-section h2 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .sell-form {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sell-form input, 
+        .sell-form select, 
+        .sell-form textarea {
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid var(--secondary);
+            background-color: var(--darker);
+            color: var(--light);
+        }
+
+        .sell-form button {
+            padding: 12px;
+            background-color: var(--success);
+            border: none;
+            color: var(--darker);
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--dark);
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            border: 2px solid var(--primary);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--light);
+        }
+
+        .payment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .payment-form input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--secondary);
+            background-color: var(--darker);
+            color: var(--light);
+        }
+
+        .payment-form button {
+            padding: 12px;
+            background-color: var(--primary);
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--dark);
+            color: #6c7086;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">GameStore 2026</div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#games">Games</a></li>
+                <li><a href="#sell">Sell Account</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Search -->
+    <div class="search-container" id="home">
+        <input type="text" id="search-input" placeholder="Search for games or categories...">
+    </div>
+
+    <!-- Main Content -->
+    <main class="container" id="games">
+        <div class="games-grid" id="games-grid">
+            <!-- Games will be injected here by JS -->
+        </div>
+    </main>
+
+    <!-- Sell Section -->
+    <section class="sell-section" id="sell">
+        <h2>Sell Your Account</h2>
+        <p>Found a rare account? Sell it to us!</p>
+        <form id="sell-form" class="sell-form">
+            <input type="text" id="account-name" placeholder="Account Name / ID" required>
+            <select id="game-type" required>
+                <option value="">Select Game Type</option>
+                <option value="mmo">MMO</option>
+                <option value="fps">FPS</option>
+                <option value="rpg">RPG</option>
+                <option value="other">Other</option>
+            </select>
+            <input type="number" id="account-level" placeholder="Account Level" required>
+            <textarea rows="3" placeholder="Additional Details (Items, Skins, etc.)"></textarea>
+            <button type="submit">Submit Offer</button>
+        </form>
+    </section>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modal-game-title">Game Title</h2>
+            <p style="margin-top: 10px;">Price: <span id="modal-price" style="color: var(--success); font-weight: bold;">$0.00</span></p>
+            <form class="payment-form">
+                <input type="text" placeholder="Card Number" required>
+                <input type="text" placeholder="MM/YY" required>
+                <input type="text" placeholder="CVC" required>
+                <button type="submit">Pay Now</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 GameStore. All rights reserved.
+    </footer>
+
+    <script>
+        // --- DATA ---
+        const games = [
+            { name: "It Takes Two", category: "Adventure", image: "https://cdn.gameboost.com/games/it-takes-two/banner/default.webp" },
+            { name: "FIFA 23", category: "Sports", image: "https://cdn.gameboost.com/games/fifa-23/banner/default.webp" },
+            { name: "Call of Duty: Modern Warfare II", category: "Shooter", image: "https://cdn.gameboost.com/games/call-of-duty-modern-warfare-ii/banner/default.webp" },
+            { name: "Valorant", category: "Shooter", image: "https://cdn.gameboost.com/games/valorant/banner/default.webp" },
+            { name: "League of Legends", category: "MOBA", image: "https://cdn.gameboost.com/games/league-of-legends/banner/default.webp" },
+            { name: "Dota 2", category: "MOBA", image: "https://cdn.gameboost.com/games/dota-2/banner/default.webp" },
+            { name: "Counter-Strike 2", category: "Shooter", image: "https://cdn.gameboost.com/games/counter-strike-2/banner/default.webp" },
+            { name: "Apex Legends", category: "Battle Royale", image: "https://cdn.gameboost.com/games/apex-legends/banner/default.webp" },
+            { name: "Fortnite", category: "Battle Royale", image: "https://cdn.gameboost.com/games/fortnite/banner/default.webp" },
+            { name: "PUBG", category: "Battle Royale", image: "https://cdn.gameboost.com/games/pubg/banner/default.webp" },
+            { name: "Warzone", category: "Shooter", image: "https://cdn.gameboost.com/games/warzone/banner/default.webp" },
+            { name: "Overwatch 2", category: "Shooter", image: "https://cdn.gameboost.com/games/overwatch-2/banner/default.webp" },
+            { name: "Rainbow Six Siege", category: "Shooter", image: "https://cdn.gameboost.com/games/rainbow-six-siege/banner/default.webp" },
+            { name: "Sea of Thieves", category: "Adventure", image: "https://cdn.gameboost.com/games/sea-of-thieves/banner/default.webp" },
+            { name: "Destiny 2", category: "MMO", image: "https://cdn.gameboost.com/games/destiny-2/banner/default.webp" },
+            { name: "World of Warcraft", category: "MMORPG", image: "https://cdn.gameboost.com/games/world-of-warcraft/banner/default.webp" },
+            { name: "Guild Wars 2", category: "MMORPG", image: "https://cdn.gameboost.com/games/guild-wars-2/banner/default.webp" },
+            { name: "Star Citizen", category: "Simulation", image: "https://cdn.gameboost.com/games/star-citizen/banner/default.webp" },
+            { name: "Elite Dangerous", category: "Simulation", image: "https://cdn.gameboost.com/games/elite-dangerous/banner/default.webp" },
+            { name: "No Man's Sky", category: "Survival", image: "https://cdn.gameboost.com/games/no-mans-sky/banner/default.webp" },
+            { name: "Subnautica", category: "Survival", image: "https://cdn.gameboost.com/games/subnautica/banner/default.webp" },
+            { name: "Rust", category: "Survival", image: "https://cdn.gameboost.com/games/rust/banner/default.webp" },
+            { name: "ARK: Survival Evolved", category: "Survival", image: "https://cdn.gameboost.com/games/ark-survival-evolved/banner/default.webp" },
+            { name: "The Forest", category: "Survival", image: "https://cdn.gameboost.com/games/the-forest/banner/default.webp" },
+            { name: "Sons of the Forest", category: "Survival", image: "https://cdn.gameboost.com/games/sons-of-the-forest/banner/default.webp" },
+            { name: "Green Hell", category: "Survival", image: "https://cdn.gameboost.com/games/green-hell/banner/default.webp" },
+            { name: "7 Days to Die", category: "Survival", image: "https://cdn.gameboost.com/games/7-days-to-die/banner/default.webp" },
+            { name: "DayZ", category: "Survival", image: "https://cdn.gameboost.com/games/dayz/banner/default.webp" },
+            { name: "Hurtworld", category: "Survival", image: "https://cdn.gameboost.com/games/hurtworld/banner/default.webp" },
+            { name: "Killing Floor 2", category: "Shooter", image: "https://cdn.gameboost.com/games/killing-floor-2/banner/default.webp" },
+            { name: "Left 4 Dead 2", category: "Shooter", image: "https://cdn.gameboost.com/games/left-4-dead-2/banner/default.webp" },
+            { name: "Dead by Daylight", category: "Horror", image: "https://cdn.gameboost.com/games/dead-by-daylight/banner/default.webp" },
+            { name: "Phasmophobia", category: "Horror", image: "https://cdn.gameboost.com/games/phasmophobia/banner/default.webp" },
+            { name: "Outlast", category: "Horror", image: "https://cdn.gameboost.com/games/outlast/banner/default.webp" },
+            { name: "Amnesia: The Bunker", category: "Horror", image: "https://cdn.gameboost.com/games/amnesia-the-bunker/banner/default.webp" },
+            { name: "Resident Evil 4 Remake", category: "Horror", image: "https://cdn.gameboost.com/games/resident-evil-4-remake/banner/default.webp" },
+            { name: "Resident Evil Village", category: "Horror", image: "https://cdn.gameboost.com/games/resident-evil-village/banner/default.webp" },
+            { name: "Alien: Isolation", category: "Horror", image: "https://cdn.gameboost.com/games/alien-isolation/banner/default.webp" },
+            { name: "SOMA", category: "Horror", image: "https://cdn.gameboost.com/games/soma/banner/default.webp" },
+            { name: "Layers of Fear", category: "Horror", image: "https://cdn.gameboost.com/games/layers-of-fear/banner/default.webp" },
+            { name: "Visage", category: "Horror", image: "https://cdn.gameboost.com/games/visage/banner/default.webp" },
+            { name: "Bendy and the Ink Machine", category: "Horror", image: "https://cdn.gameboost.com/games/bendy-and-the-ink-machine/banner/default.webp" },
+            { name: "Poppy Playtime", category: "Horror", image: "https://cdn.gameboost.com/games/poppy-playtime/banner/default.webp" },
+            { name: "Five Nights at Freddy's", category: "Horror", image: "https://cdn.gameboost.com/games/five-nights-at-freddys/banner/default.webp" },
+            { name: "Among Us", category: "Party", image: "https://cdn.gameboost.com/games/among-us/banner/default.webp" },
+            { name: "Fall Guys", category: "Party", image: "https://cdn.gameboost.com/games/fall-guys/banner/default.webp" },
+            { name: "Rocket League", category: "Sports", image: "https://cdn.gameboost.com/games/rocket-league/banner/default.webp" },
+            { name: "Minecraft", category: "Sandbox", image: "https://cdn.gameboost.com/games/minecraft/banner/default.webp" },
+            { name: "Terraria", category: "Sandbox", image: "https://cdn.gameboost.com/games/terraria/banner/default.webp" },
+            { name: "Stardew Valley", category: "Simulator", image: "https://cdn.gameboost.com/games/stardew-valley/banner/default.webp" },
+            { name: "Animal Crossing", category: "Simulator", image: "https://cdn.gameboost.com/games/animal-crossing/banner/default.webp" },
+            { name: "The Sims 4", category: "Simulator", image: "https://cdn.gameboost.com/games/the-sims-4/banner/default.webp" },
+            { name: "Cities: Skylines", category: "Strategy", image: "https://cdn.gameboost.com/games/cities-skylines/banner/default.webp" },
+            { name: "Civilization VI", category: "Strategy", image: "https://cdn.gameboost.com/games/civilization-vi/banner/default.webp" },
+            { name: "Age of Empires IV", category: "Strategy", image: "https://cdn.gameboost.com/games/age-of-empires-iv/banner/default.webp" },
+            { name: "Total War: Warhammer III", category: "Strategy", image: "https://cdn.gameboost.com/games/total-war-warhammer-iii/banner/default.webp" },
+            { name: "Crusader Kings III", category: "Strategy", image: "https://cdn.gameboost.com/games/crusader-kings-iii/banner/default.webp" },
+            { name: "Europa Universalis IV", category: "Strategy", image: "https://cdn.gameboost.com/games/europa-universalis-iv/banner/default.webp" },
+            { name: "Hearts of Iron IV", category: "Strategy", image: "https://cdn.gameboost.com/games/hearts-of-iron-iv/banner/default.webp" },
+            { name: "Victoria 3", category: "Strategy", image: "https://cdn.gameboost.com/games/victoria-3/banner/default.webp" },
+            { name: "Imperator: Rome", category: "Strategy", image: "https://cdn.gameboost.com/games/imperator-rome/banner/default.webp" },
+            { name: "Anno 1800", category: "Strategy", image: "https://cdn.gameboost.com/games/anno-1800/banner/default.webp" },
+            { name: "Factorio", category: "Strategy", image: "https://cdn.gameboost.com/games/factorio/banner/default.webp" },
+            { name: "Satisfactory", category: "Strategy", image: "https://cdn.gameboost.com/games/satisfactory/banner/default.webp" },
+            { name: "Dyson Sphere Program", category: "Strategy", image: "https://cdn.gameboost.com/games/dyson-sphere-program/banner/default.webp" },
+            { name: "Barotrauma", category: "Strategy", image: "https://cdn.gameboost.com/games/barotrauma/banner/default.webp" },
+            { name: "Oxygen Not Included", category: "Strategy", image: "https://cdn.gameboost.com/games/oxygen-not-included/banner/default.webp" },
+            { name: "RimWorld", category: "Strategy", image: "https://cdn.gameboost.com/games/rimworld/banner/default.webp" },
+            { name: "Don't Starve Together", category: "Survival", image: "https://cdn.gameboost.com/games/dont-starve-together/banner/default.webp" },
+            { name: "Valheim", category: "Survival", image: "https://cdn.gameboost.com/games/valheim/banner/default.webp" },
+            { name: "Grounded", category: "Survival", image: "https://cdn.gameboost.com/games/grounded/banner/default.webp" },
+            { name: "V Rising", category: "Survival", image: "https://cdn.gameboost.com/games/v-rising/banner/default.webp" },
+            { name: "Enshrouded", category: "Survival", image: "https://cdn.gameboost.com/games/enshrouded/banner/default.webp" },
+            { name: "Palworld", category: "Survival", image: "https://cdn.gameboost.com/games/palworld/banner/default.webp" },
+            { name: "Lethal Company", category: "Horror", image: "https://cdn.gameboost.com/games/lethal-company/banner/default.webp" },
+            { name: "Content Warning", category: "Horror", image: "https://cdn.gameboost.com/games/content-warning/banner/default.webp" },
+            { name: "Panicore", category: "Horror", image: "https://cdn.gameboost.com/games/panicore/banner/default.webp" },
+            { name: "Devour", category: "Horror", image: "https://cdn.gameboost.com/games/devour/banner/default.webp" },
+            { name: "Evil Within 2", category: "Horror", image: "https://cdn.gameboost.com/games/evil-within-2/banner/default.webp" },
+            { name: "Conarium", category: "Horror", image: "https://cdn.gameboost.com/games/conarium/banner/default.webp" },
+            { name: "The Medium", category: "Horror", image: "https://cdn.gameboost.com/games/the-medium/banner/default.webp" },
+            { name: "Inscryption", category: "Horror", image: "https://cdn.gameboost.com/games/inscryption/banner/default.webp" },
+            { name: "Dome Keeper", category: "Strategy", image: "https://cdn.gameboost.com/games/dome-keeper/banner/default.webp" },
+            { name: "Core Keeper", category: "Survival", image: "https://cdn.gameboost.com/games/core-keeper/banner/default.webp" },
+            { name: "Sun Haven", category: "Simulator", image: "https://cdn.gameboost.com/games/sun-haven/banner/default.webp" },
+            { name: "Roots of Pacha", category: "Simulator", image: "https://cdn.gameboost.com/games/roots-of-pacha/banner/default.webp" },
+            { name: "Wildfrost", category: "Strategy", image: "https://cdn.gameboost.com/games/wildfrost/banner/default.webp" },
+            { name: "Balatro", category: "Card", image: "https://cdn.gameboost.com/games/balatro/banner/default.webp" },
+            { name: "Slay the Spire", category: "Card", image: "https://cdn.gameboost.com/games/slay-the-spire/banner/default.webp" },
+            { name: "Monster Train", category: "Card", image: "https://cdn.gameboost.com/games/monster-train/banner/default.webp" },
+            { name: "Griftlands", category: "Card", image: "https://cdn.gameboost.com/games/griftlands/banner/default.webp" },
+            { name: "Dicey Dungeons", category: "Card", image: "https://cdn.gameboost.com/games/dicey-dungeons/banner/default.webp" },
+            { name: "Loop Hero", category: "Strategy", image: "https://cdn.gameboost.com/games/loop-hero/banner/default.webp" },
+            { name: "Into the Breach", category: "Strategy", image: "https://cdn.gameboost.com/games/into-the-breach/banner/default.webp" },
+            { name: "FTL: Faster Than Light", category: "Strategy", image: "https://cdn.gameboost.com/games/ftl-faster-than-light/banner/default.webp" },
+            { name: "Rogue Legacy 2", category: "Roguelike", image: "https://cdn.gameboost.com/games/rogue-legacy-2/banner/default.webp" },
+            { name: "Hades", category: "Roguelike", image: "https://cdn.gameboost.com/games/hades/banner/default.webp" },
+            { name: "Dead Cells", category: "Roguelike", image: "https://cdn.gameboost.com/games/dead-cells/banner/default.webp" },
+            { name: "Risk of Rain 2", category: "Roguelike", image: "https://cdn.gameboost.com/games/risk-of-rain-2/banner/default.webp" },
+            { name: "Enter the Gungeon", category: "Roguelike", image: "https://cdn.gameboost.com/games/enter-the-gungeon/banner/default.webp" },
+            { name: "Nuclear Throne", category: "Roguelike", image: "https://cdn.gameboost.com/games/nuclear-throne/banner/default.webp" },
+            { name: "Spelunky 2", category: "Platformer", image: "https://cdn.gameboost.com/games/spelunky-2/banner/default.webp" },
+            { name: "Celeste", category: "Platformer", image: "https://cdn.gameboost.com/games/celeste/banner/default.webp" },
+            { name: "Hollow Knight", category: "Metroidvania", image: "https://cdn.gameboost.com/games/hollow-knight/banner/default.webp" },
+            { name: "Ori and the Will of the Wisps", category: "Platformer", image: "https://cdn.gameboost.com/games/ori-and-the-will-of-the-wisps/banner/default.webp" },
+            { name: "Cuphead", category: "Action", image: "https://cdn.gameboost.com/games/cuphead/banner/default.webp" },
+            { name: "Undertale", category: "RPG", image: "https://cdn.gameboost.com/games/undertale/banner/default.webp" },
+            { name: "Deltarune", category: "RPG", image: "https://cdn.gameboost.com/games/deltarune/banner/default.webp" },
+            { name: "Omori", category: "RPG", image: "https://cdn.gameboost.com/games/omori/banner/default.webp" },
+            { name: "Yume Nikki", category: "Adventure", image: "https://cdn.gameboost.com/games/yume-nikki/banner/default.webp" },
+            { name: "Katana Zero", category: "Action", image: "https://cdn.gameboost.com/games/katana-zero/banner/default.webp" },
+            { name: "Hotline Miami", category: "Action", image: "https://cdn.gameboost.com/games/hotline-miami/banner/default.webp" },
+            { name: "Hotline Miami 2", category: "Action", image: "https://cdn.gameboost.com/games/hotline-miami-2/banner/default.webp" },
+            { name: "Hyper Light Drifter", category: "Action", image: "https://cdn.gameboost.com/games/hyper-light-drifter/banner/default.webp" },
+            { name: "Axiom Verge", category: "Action", image: "https://cdn.gameboost.com/games/axiom-verge/banner/default.webp" },
+            { name: "Tunic", category: "Action", image: "https://cdn.gameboost.com/games/tunic/banner/default.webp" },
+            { name: "CrossCode", category: "Action", image: "https://cdn.gameboost.com/games/crosscode/banner/default.webp" },
+            { name: "Blasphemous", category: "Action", image: "https://cdn.gameboost.com/games/blasphemous/banner/default.webp" },
+            { name: "Blasphemous 2", category: "Action", image: "https://cdn.gameboost.com/games/blasphemous-2/banner/default.webp" },
+            { name: "Salt and Sanctuary", category: "Action", image: "https://cdn.gameboost.com/games/salt-and-sanctuary/banner/default.webp" },
+            { name: "Salt and Sacrifice", category: "Action", image: "https://cdn.gameboost.com/games/salt-and-sacrifice/banner/default.webp" },
+            { name: "Prince of Persia: The Lost Crown", category: "Action", image: "https://cdn.gameboost.com/games/prince-of-persia-the-lost-crown/banner/default.webp" },
+            { name: "Hollow Knight: Silksong", category: "Metroidvania", image: "https://cdn.gameboost.com/games/hollow-knight-silksong/banner/default.webp" },
+            { name: "Enderal", category: "RPG", image: "https://cdn.gameboost.com/games/enderal/banner/default.webp" },
+            { name: "Skyblivion", category: "RPG", image: "https://cdn.gameboost.com/games/skyblivion/banner/default.webp" },
+            { name: "Vanilla Unlocked", category: "Mod", image: "https://cdn.gameboost.com/games/vanilla-unlocked/banner/default.webp" },
+            { name: "GTA V", category: "Action", image: "https://cdn.gameboost.com/games/gta-v/banner/default.webp" },
+            { name: "GTA Online", category: "Action", image: "https://cdn.gameboost.com/games/gta-online/banner/default.webp" },
+            { name: "Red Dead Online", category: "Action", image: "https://cdn.gameboost.com/games/red-dead-online/banner/default.webp" },
+            { name: "Arkham City", category: "Action", image: "https://cdn.gameboost.com/games/arkham-city/banner/default.webp" },
+            { name: "Arkham Knight", category: "Action", image: "https://cdn.gameboost.com/games/arkham-knight/banner/default.webp" },
+            { name: "Batman: The Telltale Series", category: "Adventure", image: "https://cdn.gameboost.com/games/batman-the-telltale-series/banner/default.webp" },
+            { name: "Telltale's Walking Dead", category: "Adventure", image: "https://cdn.gameboost.com/games/telltales-walking-dead/banner/default.webp" },
+            { name: "Life is Strange", category: "Adventure", image: "https://cdn.gameboost.com/games/life-is-strange/banner/default.webp" },
+            { name: "Life is Strange 2", category: "Adventure", image: "https://cdn.gameboost.com/games/life-is-strange-2/banner/default.webp" },
+            { name: "Beyond: Two Souls", category: "Adventure", image: "https://cdn.gameboost.com/games/beyond-two-souls/banner/default.webp" },
+            { name: "Heavy Rain", category: "Adventure", image: "https://cdn.gameboost.com/games/heavy-rain/banner/default.webp" },
+            { name: "Detroit: Become Human", category: "Adventure", image: "https://cdn.gameboost.com/games/detroit-become-human/banner/default.webp" },
+            { name: "Until Dawn", category: "Horror", image: "https://cdn.gameboost.com/games/until-dawn/banner/default.webp" },
+            { name: "The Quarry", category: "Horror", image: "https://cdn.gameboost.com/games/the-quarry/banner/default.webp" },
+            { name: "Firewatch", category: "Adventure", image: "https://cdn.gameboost.com/games/firewatch/banner/default.webp" },
+            { name: "What Remains of Edith Finch", category: "Adventure", image: "https://cdn.gameboost.com/games/what-remains-of-edith-finch/banner/default.webp" },
+            { name: "Gorogoa", category: "Puzzle", image: "https://cdn.gameboost.com/games/gorogoa/banner/default.webp" },
+            { name: "Monument Valley", category: "Puzzle", image: "https://cdn.gameboost.com/games/monument-valley/banner/default.webp" },
+            { name: "The Witness", category: "Puzzle", image: "https://cdn.gameboost.com/games/the-witness/banner/default.webp" },
+            { name: "Portal 2", category: "Puzzle", image: "https://cdn.gameboost.com/games/portal-2/banner/default.webp" },
+            { name: "Portal", category: "Puzzle", image: "https://cdn.gameboost.com/games/portal/banner/default.webp" },
+            { name: "The Talos Principle", category: "Puzzle", image: "https://cdn.gameboost.com/games/the-talos-principle/banner/default.webp" },
+            { name: "The Talos Principle 2", category: "Puzzle", image: "https://cdn.gameboost.com/games/the-talos-principle-2/banner/default.webp" },
+            { name: "Superliminal", category: "Puzzle", image: "https://cdn.gameboost.com/games/superliminal/banner/default.webp" },
+            { name: "Antichamber", category: "Puzzle", image: "https://cdn.gameboost.com/games/antichamber/banner/default.webp" },
+            { name: "Manifold Garden", category: "Puzzle", image: "https://cdn.gameboost.com/games/manifold-garden/banner/default.webp" },
+            { name: "Fez", category: "Puzzle", image: "https://cdn.gameboost.com/games/fez/banner/default.webp" },
+            { name: "Braid", category: "Puzzle", image: "https://cdn.gameboost.com/games/braid/banner/default.webp" },
+            { name: "Stephen's Sausage Roll", category: "Puzzle", image: "https://cdn.gameboost.com/games/stephens-sausage-roll/banner/default.webp" },
+            { name: "Picross", category: "Puzzle", image: "https://cdn.gameboost.com/games/picross/banner/default.webp" },
+            { name: "Sudoku", category: "Puzzle", image: "https://cdn.gameboost.com/games/sudoku/banner/default.webp" },
+            { name: "Chess", category: "Strategy", image: "https://cdn.gameboost.com/games/chess/banner/default.webp" },
+            { name: "Go", category: "Strategy", image: "https://cdn.gameboost.com/games/go/banner/default.webp" },
+            { name: "Backgammon", category: "Board", image: "https://cdn.gameboost.com/games/backgammon/banner/default.webp" },
+            { name: "Mahjong", category: "Tile", image: "https://cdn.gameboost.com/games/mahjong/banner/default.webp" },
+            { name: "Solitaire", category: "Card", image: "https://cdn.gameboost.com/games/solitaire/banner/default.webp" },
+            { name: "Bridge", category: "Card", image: "https://cdn.gameboost.com/games/bridge/banner/default.webp" },
+            { name: "Poker", category: "Card", image: "https://cdn.gameboost.com/games/poker/banner/default.webp" },
+            { name: "Blackjack", category: "Card", image: "https://cdn.gameboost.com/games/blackjack/banner/default.webp" },
+            { name: "Roulette", category: "Casino", image: "https://cdn.gameboost.com/games/roulette/banner/default.webp" },
+            { name: "Slots", category: "Casino", image: "https://cdn.gameboost.com/games/slots/banner/default.webp" },
+            { name: "Baccarat", category: "Card", image: "https://cdn.gameboost.com/games/baccarat/banner/default.webp" },
+            { name: "Craps", category: "Dice", image: "https://cdn.gameboost.com/games/craps/banner/default.webp" },
+            { name: "Keno", category: "Lottery", image: "https://cdn.gameboost.com/games/keno/banner/default.webp" },
+            { name: "Scratch Cards", category: "Lottery", image: "https://cdn.gameboost.com/games/scratch-cards/banner/default.webp" },
+            { name: "Virtual Sports", category: "Simulation", image: "https://cdn.gameboost.com/games/virtual-sports/banner/default.webp" },
+            { name: "Esports Betting", category: "Esports", image: "https://cdn.gameboost.com/games/esports-betting/banner/default.webp" },
+            { name: "Fantasy Sports", category: "Sports", image: "https://cdn.gameboost.com/games/fantasy-sports/banner/default.webp" },
+            { name: "Daily Fantasy", category: "Sports", image: "https://cdn.gameboost.com/games/daily-fantasy/banner/default.webp" },
+            { name: "Prop Betting", category: "Esports", image: "https://cdn.gameboost.com/games/prop-betting/banner/default.webp" },
+            { name: "Live Casino", category: "Casino", image: "https://cdn.gameboost.com/games/live-casino/banner/default.webp" },
+            { name: "Game Shows", category: "Entertainment", image: "https://cdn.gameboost.com/games/game-shows/banner/default.webp" },
+            { name: "Jackpot Games", category: "Casino", image: "https://cdn.gameboost.com/games/jackpot-games/banner/default.webp" },
+            { name: "Progressive Slots", category: "Casino", image: "https://cdn.gameboost.com/games/progressive-slots/banner/default.webp" },
+            { name: "Classic Slots", category: "Casino", image: "https://cdn.gameboost.com/games/classic-slots/banner/default.webp" },
+            { name: "Video Poker", category: "Card", image: "https://cdn.gameboost.com/games/video-poker/banner/default.webp" },
+            { name: "Table Games", category: "Casino", image: "https://cdn.gameboost.com/games/table-games/banner/default.webp" },
+            { name: "High Stakes", category: "Casino", image: "https://cdn.gameboost.com/games/high-stakes/banner/default.webp" },
+            { name: "Low Stakes", category: "Casino", image: "https://cdn.gameboost.com/games/low-stakes/banner/default.webp" },
+            { name: "Bonus Rounds", category: "Feature", image: "https://cdn.gameboost.com/games/bonus-rounds/banner/default.webp" },
+            { name: "Free Spins", category: "Feature", image: "https://cdn.gameboost.com/games/free-spins/banner/default.webp" },
+            { name: "Multipliers", category: "Feature", image: "https://cdn.gameboost.com/games/multipliers/banner/default.webp" },
+            { name: "Wild Symbols", category: "Feature", image: "https://cdn.gameboost.com/games/wild-symbols/banner/default.webp" },
+            { name: "Scatter Symbols", category: "Feature", image: "https://cdn.gameboost.com/games/scatter-symbols/banner/default.webp" },
+            { name: "Paylines", category: "Mechanic", image: "https://cdn.gameboost.com/games/paylines/banner/default.webp" },
+            { name: "Reels", category: "Mechanic", image: "https://cdn.gameboost.com/games/reels/banner/default.webp" },
+            { name: "Rows", category: "Mechanic", image: "https://cdn.gameboost.com/games/rows/banner/default.webp" },
+            { name: "Clusters", category: "Mechanic", image: "https://cdn.gameboost.com/games/clusters/banner/default.webp" },
+            { name: "Megaways", category: "Mechanic", image: "https://cdn.gameboost.com/games/megaways/banner/default.webp" },
+            { name: "Drop Mechanic", category: "Mechanic", image: "https://cdn.gameboost.com/games/drop-mechanic/banner/default.webp" },
+            { name: "Cascade", category: "Mechanic", image: "https://cdn.gameboost.com/games/cascade/banner/default.webp" },
+            { name: "Rolling Reels", category: "Mechanic", image: "https://cdn.gameboost.com/games/rolling-reels/banner/default.webp" },
+            { name: "Expanding Wilds", category: "Feature", image: "https://cdn.gameboost.com/games/expanding-wilds/banner/default.webp" },
+            { name: "Sticky Wilds", category: "Feature", image: "https://cdn.gameboost.com/games/sticky-wilds/banner/default.webp" },
+            { name: "Walking Wilds", category: "Feature", image: "https://cdn.gameboost.com/games/walking-wilds/banner/default.webp" },
+            { name: "Random Wilds", category: "Feature", image: "https://cdn.gameboost.com/games/random-wilds/banner/default.webp" },
+            { name: "Collapsing Reels", category: "Mechanic", image: "https://cdn.gameboost.com/games/collapsing-reels/banner/default.webp" },
+            { name: "Win Both Ways", category: "Feature", image: "https://cdn.gameboost.com/games/win-both-ways/banner/default.webp" },
+            { name: "Buy Bonus", category: "Feature", image: "https://cdn.gameboost.com/games/buy-bonus/banner/default.webp" },
+            { name: "Feature Buy", category: "Feature", image: "https://cdn.gameboost.com/games/feature-buy/banner/default.webp" },
+            { name: "Ante Bet", category: "Feature", image: "https://cdn.gameboost.com/games/ante-bet/banner/default.webp" },
+            { name: "Super Bet", category: "Feature", image: "https://cdn.gameboost.com/games/super-bet/banner/default.webp" },
+            { name: "High Volatility", category: "Volatility", image: "https://cdn.gameboost.com/games/high-volatility/banner/default.webp" },
+            { name: "Medium Volatility", category: "Volatility", image: "https://cdn.gameboost.com/games/medium-volatility/banner/default.webp" },
+            { name: "Low Volatility", category: "Volatility", image: "https://cdn.gameboost.com/games/low-volatility/banner/default.webp" },
+            { name: "High RTP", category: "Statistic", image: "https://cdn.gameboost.com/games/high-rtp/banner/default.webp" },
+            { name: "Low RTP", category: "Statistic", image: "https://cdn.gameboost.com/games/low-rtp/banner/default.webp" },
+            { name: "Max Win", category: "Statistic", image: "https://cdn.gameboost.com/games/max-win/banner/default.webp" },
+            { name: "Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/jackpot/banner/default.webp" },
+            { name: "Fixed Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/fixed-jackpot/banner/default.webp" },
+            { name: "Progressive Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/progressive-jackpot/banner/default.webp" },
+            { name: "Mystery Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/mystery-jackpot/banner/default.webp" },
+            { name: "Local Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/local-jackpot/banner/default.webp" },
+            { name: "Network Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/network-jackpot/banner/default.webp" },
+            { name: "Solo Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/solo-jackpot/banner/default.webp" },
+            { name: "Shared Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/shared-jackpot/banner/default.webp" },
+            { name: "Tiered Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/tiered-jackpot/banner/default.webp" },
+            { name: "Mini Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/mini-jackpot/banner/default.webp" },
+            { name: "Minor Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/minor-jackpot/banner/default.webp" },
+            { name: "Major Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/major-jackpot/banner/default.webp" },
+            { name: "Grand Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/grand-jackpot/banner/default.webp" },
+            { name: "Ultimate Jackpot", category: "Statistic", image: "https://cdn.gameboost.com/games/ultimate-jackpot/banner/default.webp" },
+            { name: "Top Prize", category: "Statistic", image: "https://cdn.gameboost.com/games/top-prize/banner/default.webp" },
+            { name: "Winnings", category: "Statistic", image: "https://cdn.gameboost.com/games/winnings/banner/default.webp" },
+            { name: "Payouts", category: "Statistic", image: "https://cdn.gameboost.com/games/payouts/banner/default.webp" },
+            { name: "Return to Player", category: "Statistic", image: "https://cdn.gameboost.com/games/return-to-player/banner/default.webp" },
+            { name: "House Edge", category: "Statistic", image: "https://cdn.gameboost.com/games/house-edge/banner/default.webp" },
+            { name: "Variance", category: "Statistic", image: "https://cdn.gameboost.com/games/variance/banner/default.webp" },
+            { name: "Standard Deviation", category: "Statistic", image: "https://cdn.gameboost.com/games/standard-deviation/banner/default.webp" },
+            { name: "Hit Frequency", category: "Statistic", image: "https://cdn.gameboost.com/games/hit-frequency/banner/default.webp" },
+            { name: "Win Rate", category: "Statistic", image: "https://cdn.gameboost.com/games/win-rate/banner/default.webp" },
+            { name: "Loss Rate", category: "Statistic", image: "https://cdn.gameboost.com/games/loss-rate/banner/default.webp" },
+            { name: "Break Even", category: "Statistic", image: "https://cdn.gameboost.com/games/break-even/banner/default.webp" },
+            { name: "Profit", category: "Statistic", image: "https://cdn.gameboost.com/games/profit/banner/default.webp" },
+            { name: "Loss", category: "Statistic", image: "https://cdn.gameboost.com/games/loss/banner/default.webp" },
+            { name: "Bankroll", category: "Finance", image: "https://cdn.gameboost.com/games/bankroll/banner/default.webp" },
+            { name: "Budget", category: "Finance", image: "https://cdn.gameboost.com/games/budget/banner/default.webp" },
+            { name: "Stakes", category: "Finance", image: "https://cdn.gameboost.com/games/stakes/banner/default.webp" },
+            { name: "Bet Size", category: "Finance", image: "https://cdn.gameboost.com/games/bet-size/banner/default.webp" },
+            { name: "Wager", category: "Finance", image: "https://cdn.gameboost.com/games/wager/banner/default.webp" },
+            { name: "Deposit", category: "Finance", image: "https://cdn.gameboost.com/games/deposit/banner/default.webp" },
+            { name: "Withdrawal", category: "Finance", image: "https://cdn.gameboost.com/games/withdrawal/banner/default.webp" },
+            { name: "Bonus", category: "Finance", image: "https://cdn.gameboost.com/games/bonus/banner/default.webp" },
+            { name: "Promotion", category: "Finance", image: "https://cdn.gameboost.com/games/promotion/banner/default.webp" },
+            { name: "Reward", category: "Finance", image: "https://cdn.gameboost.com/games/reward/banner/default.webp" },
+            { name: "Cashback", category: "Finance", image: "https://cdn.gameboost.com/games/cashback/banner/default.webp" },
+            { name: "Loyalty Points", category: "Finance", image: "https://cdn.gameboost.com/games/loyalty-points/banner/default.webp" },
+            { name: "VIP", category: "Finance", image: "https://cdn.gameboost.com/games/vip/banner/default.webp" },
+            { name: "Rewards Program", category: "Finance", image: "https://cdn.gameboost.com/games/rewards-program/banner/default.webp" },
+            { name: "Tier System", category: "Finance", image: "https://cdn.gameboost.com/games/tier-system/banner/default.webp" },
+            { name: "Level Up", category: "Finance", image: "https://cdn.gameboost.com/games/level-up/banner/default.webp" },
+            { name: "Achievement", category: "Finance", image: "https://cdn.gameboost.com/games/achievement/banner/default.webp" },
+            { name: "Badge", category: "Finance", image: "https://cdn.gameboost.com/games/badge/banner/default.webp" },
+            { name: "Rank", category: "Finance", image: "https://cdn.gameboost.com/games/rank/banner/default.webp" },
+            { name: "Leaderboard", category: "Finance", image: "https://cdn.gameboost.com/games/leaderboard/banner/default.webp" },
+            { name: "Tournament", category: "Finance", image: "https://cdn.gameboost.com/games/tournament/banner/default.webp" },
+            { name: "Prize Pool", category: "Finance", image: "https://cdn.gameboost.com/games/prize-pool/banner/default.webp" },
+            { name: "Entry Fee", category: "Finance", image: "https://cdn.gameboost.com/games/entry-fee/banner/default.webp" },
+            { name: "Winner", category: "Finance", image: "https://cdn.gameboost.com/games/winner/banner/default.webp" },
+            { name: "Runner Up", category: "Finance", image: "https://cdn.gameboost.com/games/runner-up/banner/default.webp" },
+            { name: "Third Place", category: "Finance", image: "https://cdn.gameboost.com/games/third-place/banner/default.webp" },
+            { name: "Consolation Prize", category: "Finance", image: "https://cdn.gameboost.com/games/consolation-prize/banner/default.webp" },
+            { name: "Participation Award", category: "Finance", image: "https://cdn.gameboost.com/games/participation-award/banner/default.webp" },
+            { name: "Special Award", category: "Finance", image: "https://cdn.gameboost.com/games/special-award/banner/default.webp" },
+            { name: "Unique Item", category: "Item", image: "https://cdn.gameboost.com/games/unique-item/banner/default.webp" },
+            { name: "Rare Item", category: "Item", image: "https://cdn.gameboost.com/games/rare-item/banner/default.webp" },
+            { name: "Common Item", category: "Item", image: "https://cdn.gameboost.com/games/common-item/banner/default.webp" },
+            { name: "Legendary Item", category: "Item", image: "https://cdn.gameboost.com/games/legendary-item/banner/default.webp" },
+            { name: "Mythic Item", category: "Item", image: "https://cdn.gameboost.com/games/mythic-item/banner/default.webp" },
+            { name: "Epic Item", category: "Item", image: "https://cdn.gameboost.com/games/epic-item/banner/default.webp" },
+            { name: "Uncommon Item", category: "Item", image: "https://cdn.gameboost.com/games/uncommon-item/banner/default.webp" },
+            { name: "Consumable", category: "Item", image: "https://cdn.gameboost.com/games/consumable/banner/default.webp" },
+            { name: "Key Item", category: "Item", image: "https://cdn.gameboost.com/games/key-item/banner/default.webp" },
+            { name: "Quest Item", category: "Item", image: "https://cdn.gameboost.com/games/quest-item/banner/default.webp" },
+            { name: "Crafting Material", category: "Item", image: "https://cdn.gameboost.com/games/crafting-material/banner/default.webp" },
+            { name: "Resource", category: "Item", image: "https://cdn.gameboost.com/games/resource/banner/default.webp" },
+            { name: "Currency", category: "Item", image: "https://cdn.gameboost.com/games/currency/banner/default.webp" },
+            { name: "Gold", category: "Currency", image: "https://cdn.gameboost.com/games/gold/banner/default.webp" },
+            { name: "Silver", category: "Currency", image: "https://cdn.gameboost.com/games/silver/banner/default.webp" },
+            { name: "Bronze", category: "Currency", image: "https://cdn.gameboost.com/games/bronze/banner/default.webp" },
+            { name: "Diamond", category: "Currency", image: "https://cdn.gameboost.com/games/diamond/banner/default.webp" },
+            { name: "Ruby", category: "Currency", image: "https://cdn.gameboost.com/games/ruby/banner/default.webp" },
+            { name: "Emerald", category: "Currency", image: "https://cdn.gameboost.com/games/emerald/banner/default.webp" },
+            { name: "Sapphire", category: "Currency", image: "https://cdn.gameboost.com/games/sapphire/banner/default.webp" },
+            { name: "Opal", category: "Currency", image: "https://cdn.gameboost.com/games/opal/banner/default.webp" },
+            { name: "Pearl", category: "Currency", image: "https://cdn.gameboost.com/games/pearl/banner/default.webp" },
+            { name: "Coin", category: "Currency", image: "https://cdn.gameboost.com/games/coin/banner/default.webp" },
+            { name: "Token", category: "Currency", image: "https://cdn.gameboost.com/games/token/banner/default.webp" },
+            { name: "Chip", category: "Currency", image: "https://cdn.gameboost.com/games/chip/banner/default.webp" }
+        ];
+
+        // --- LOGIC ---
+        
+        // Render Games Function
+        function renderGames(gamesToRender) {
+            const container = document.getElementById('games-grid');
+            container.innerHTML = ''; // Clear existing content
+            
+            gamesToRender.forEach(game => {
+                if (!game.name) return; // Skip empty entries
+                
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                
+                // Create image element
+                const img = document.createElement('img');
+                img.src = game.image || 'https://via.placeholder.com/300x200?text=No+Image';
+                img.alt = game.name;
+                img.loading = 'lazy';
+                
+                // Create title
+                const title = document.createElement('h3');
+                title.textContent = game.name;
+                
+                // Create category badge
+                const badge = document.createElement('span');
+                badge.className = 'category-badge';
+                badge.textContent = game.category;
+                
+                // Create price/button area
+                const action = document.createElement('div');
+                action.className = 'game-action';
+                
+                const btn = document.createElement('button');
+                btn.textContent = 'View Details';
+                btn.onclick = () => openPaymentModal(game);
+                
+                action.appendChild(btn);
+                
+                card.appendChild(img);
+                card.appendChild(badge);
+                card.appendChild(title);
+                card.appendChild(action);
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Initial Render
+        document.addEventListener('DOMContentLoaded', () => {
+            renderGames(games);
+            
+            // Search functionality
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase();
+                    const filtered = games.filter(game => 
+                        game.name.toLowerCase().includes(query) || 
+                        game.category.toLowerCase().includes(query)
+                    );
+                    renderGames(filtered);
+                });
+            }
+        });
+
+        // Payment Modal Logic
+        function openPaymentModal(game) {
+            const modal = document.getElementById('payment-modal');
+            const modalTitle = document.getElementById('modal-game-title');
+            const modalPrice = document.getElementById('modal-price');
+            
+            if (modal && modalTitle && modalPrice) {
+                modalTitle.textContent = game.name;
+                modalPrice.textContent = `$${(Math.random() * 50 + 10).toFixed(2)}`; // Random price for demo
+                modal.style.display = 'flex';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('payment-modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Close modal with X button
+        const closeBtn = document.querySelector('.close-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                document.getElementById('payment-modal').style.display = 'none';
+            });
+        }
+
+        // Sell Your Account Section Logic
+        const sellForm = document.getElementById('sell-form');
+        if (sellForm) {
+            sellForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const accountName = document.getElementById('account-name').value;
+                const gameType = document.getElementById('game-type').value;
+                const level = document.getElementById('account-level').value;
+                
+                alert(`Thank you! We have received your offer for ${accountName} (${gameType}, Level ${level}). We will contact you shortly.`);
+                sellForm.reset();
+            });
+        }
+    </script>
+</body>
+</html>
